@@ -21,6 +21,13 @@ void* vector_get(vector* v, size_t i) {
 	return v->_data + (v->_elem_size * i);
 }
 
+bool vector_in(vector* v, void* d) {
+	for (size_t i = 0; i < v->_size; ++i) {
+		if (!memcmp(v->_data + (i * v->_elem_size), d, v->_elem_size)) return true;
+	}
+	return false;
+}
+
 size_t vector_length(vector* v) {
 	return v->_size;
 }
@@ -32,10 +39,20 @@ void* vector_pop(vector* v) {
 	return v->_data + (v->_size * v->_elem_size);
 }
 
-void vector_push(vector* v, void* x) {
-	memcpy(v->_data + (v->_size * v->_elem_size), x, v->_elem_size);
+void vector_push(vector* v, void* d) {
+	memcpy(v->_data + (v->_size * v->_elem_size), d, v->_elem_size);
 	++(v->_size);
 	if (v->_size == v->_capacity) _vector_increase_capacity(v);
+}
+
+void vector_reverse(vector* v) {
+	void* t = malloc(v->_elem_size);
+	for (size_t i = 0; i < v->_size / 2; ++i) {
+		memcpy(t, v->_data + (i * v->_elem_size), v->_elem_size);
+		memcpy(v->_data + (i * v->_elem_size), v->_data + (v->_size - 1 - i) * v->_elem_size, v->_elem_size);
+		memcpy(v->_data + (v->_size - 1 - i) * v->_elem_size, t, v->_elem_size);
+	}
+	free(t);
 }
 
 void vector_set(vector* v, size_t i, void* d) {
@@ -55,23 +72,3 @@ void _vector_decrease_capacity(vector* v) {
 	v->_capacity /= 2;
 	v->_data = realloc(v->_data, v->_capacity * v->_elem_size);
 }
-
-/*int main(int argc, char* argv[]) {
-	vector* v = vector_create(sizeof(int));
-	int x = 2;
-	vector_push(v, &x);
-	x = 4;
-	vector_push(v, &x);
-	x = 6;
-	vector_push(v, &x);
-	x = 8;
-	vector_push(v, &x);
-	printf("%d, %d\n", *((int*)vector_get(v, 0)), *((int*)vector_get(v, 1)));
-	x = 16;
-	vector_set(v, 1, &x);
-	printf("%d, %d\n", *((int*)vector_get(v, 0)), *((int*)vector_get(v, 1)));
-	int a = *((int*)vector_pop(v));
-	int b = *((int*)vector_pop(v));
-	printf("%d, %d\n", a, b);
-	return 0;
-} */

@@ -1,6 +1,7 @@
 #ifndef __VECTOR_CUTIL
 #define __VECTOR_CUTIL
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -15,9 +16,11 @@ vector* vector_create(size_t);
 void vector_delete(vector*);
 
 void* vector_get(vector*, size_t);
+bool vector_in(vector*, void*);
 size_t vector_length(vector*);
 void* vector_pop(vector*);
 void vector_push(vector*, void*);
+void vector_reverse(vector*);
 void vector_set(vector*, size_t, void*);
 
 void _vector_decrease_capacity(vector*);
