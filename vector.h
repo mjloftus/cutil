@@ -16,7 +16,7 @@ vector* vector_create(size_t);
 void vector_delete(vector*);
 
 void* vector_get(vector*, size_t);
-bool vector_in(vector*, void*);
+void* vector_in(vector*, void*);
 size_t vector_length(vector*);
 void* vector_pop(vector*);
 void vector_push(vector*, void*);
