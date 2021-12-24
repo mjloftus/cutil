@@ -3,10 +3,15 @@
 Vector* vector_create(size_t elem_size) {
 	size_t default_capacity = 2;
 	Vector* v = malloc(sizeof(Vector));
+	if (!v) return NULL;
 	v->_size = 0;
 	v->_capacity = default_capacity;
 	v->_elem_size = elem_size;
 	v->_data = malloc(v->_capacity * elem_size);
+	if(!v->_data) {
+		free(v);
+		return NULL;
+	}
 	return v;
 }
 
