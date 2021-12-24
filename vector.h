@@ -5,25 +5,25 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct vector {
+typedef struct Vector {
 	void* _data;
 	size_t _size;
 	size_t _capacity;
 	size_t _elem_size;
-} vector;
+} Vector;
 
-vector* vector_create(size_t);
-void vector_delete(vector*);
+Vector* vector_create(int);
+void vector_delete(Vector*);
 
-void* vector_get(vector*, size_t);
-void* vector_in(vector*, void*);
-size_t vector_length(vector*);
-void* vector_pop(vector*);
-void vector_push(vector*, void*);
-void vector_reverse(vector*);
-void vector_set(vector*, size_t, void*);
+void* vector_get(Vector*, size_t);
+void* vector_in(Vector*, void*);
+size_t vector_length(Vector*);
+void* vector_pop(Vector*);
+void vector_push(Vector*, void*);
+void vector_reverse(Vector*);
+void vector_set(Vector*, size_t, void*);
 
-void _vector_decrease_capacity(vector*);
-void _vector_increase_capacity(vector*);
+void _vector_decrease_capacity(Vector*);
+void _vector_increase_capacity(Vector*);
 
 #endif
