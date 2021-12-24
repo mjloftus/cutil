@@ -50,10 +50,19 @@ START_TEST (in_returns_elem_when_found) {
 } END_TEST
 
 
-START_TEST (in_returns_null_when_not_found) {
+START_TEST (in_returns_minus_one_when_not_found) {
 	for (int i = 10; i < 20; ++i) {
 		ck_assert_int_eq(vector_in(good_vector, &i), -1);
 	}
+} END_TEST
+
+START_TEST (in_returns_minus_one_when_no_vector) {
+	int i = 4;
+	ck_assert_int_eq(vector_in(NULL, &i), -1);
+} END_TEST
+
+START_TEST (in_returns_minus_one_when_no_data) {
+	ck_assert_int_eq(vector_in(good_vector, NULL), -1);
 } END_TEST
 
 /* vector_length */
@@ -82,7 +91,9 @@ Suite* vector_suite(void) {
 	tc_in = tcase_create("in");
 	tcase_add_checked_fixture(tc_in, setup_good_vector, teardown_good_vector);
 	tcase_add_test(tc_in, in_returns_elem_when_found);
-	tcase_add_test(tc_in, in_returns_null_when_not_found);
+	tcase_add_test(tc_in, in_returns_minus_one_when_not_found);
+	tcase_add_test(tc_in, in_returns_minus_one_when_no_vector);
+	tcase_add_test(tc_in, in_returns_minus_one_when_no_data);
 	suite_add_tcase(s, tc_in);
 
 	TCase* tc_length;
