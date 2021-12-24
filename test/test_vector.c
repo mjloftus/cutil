@@ -36,6 +36,10 @@ START_TEST (get_returns_null_out_of_range) {
 	vector_delete(v);
 } END_TEST
 
+START_TEST (get_returns_null_when_no_vector) {
+	ck_assert_ptr_null(vector_get(NULL, 5));
+} END_TEST
+
 /*
  * vector_in
  */
@@ -62,6 +66,18 @@ START_TEST (in_returns_null_when_not_found) {
 	vector_delete(v);
 } END_TEST
 
+/*
+ * vector_length
+ */
+START_TEST (length_returns_size_of_vector) {
+	Vector* v = vector_create(sizeof(int));
+	for (int i = 0; i < 10; ++i) {
+		vector_push(v, &i);
+	}
+	ck_assert_int_eq(vector_length(v), 10);
+	vector_delete(v);
+} END_TEST
+
 Suite* vector_suite(void) {
 	Suite* s;
 	TCase* tc_create;
@@ -73,12 +89,17 @@ Suite* vector_suite(void) {
 	tc_get = tcase_create("get");
 	tcase_add_test(tc_get, get_returns_elem_in_range);
 	tcase_add_test(tc_get, get_returns_null_out_of_range);
+	tcase_add_test(tc_get, get_returns_null_when_no_vector);
 	suite_add_tcase(s, tc_get);
 	TCase* tc_in;
 	tc_in = tcase_create("in");
 	tcase_add_test(tc_in, in_returns_elem_when_found);
 	tcase_add_test(tc_in, in_returns_null_when_not_found);
 	suite_add_tcase(s, tc_in);
+	TCase* tc_length;
+	tc_length = tcase_create("length");
+	tcase_add_test(tc_length, length_returns_size_of_vector);
+	suite_add_tcase(s, tc_length);
 
 	return s;
 }
