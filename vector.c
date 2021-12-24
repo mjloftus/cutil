@@ -28,6 +28,7 @@ void* vector_get(Vector* v, size_t i) {
 }
 
 int vector_in(Vector* v, void* d) {
+	if (!v || !d) return NULL;
 	for (size_t i = 0; i < v->_size; ++i) {
 		if (!memcmp(v->_data + (i * v->_elem_size), d, v->_elem_size)) return i;
 	}
