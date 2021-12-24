@@ -1,12 +1,12 @@
 #include "vector.h"
 
-Vector* vector_create(int s) {
-	if (s <= 0) return NULL;
+Vector* vector_create(size_t elem_size) {
+	size_t default_capacity = 2;
 	Vector* v = malloc(sizeof(Vector));
 	v->_size = 0;
-	v->_capacity = 2;
-	v->_elem_size = s;
-	v->_data = malloc(v->_capacity * s);
+	v->_capacity = default_capacity;
+	v->_elem_size = elem_size;
+	v->_data = malloc(v->_capacity * elem_size);
 	return v;
 }
 
