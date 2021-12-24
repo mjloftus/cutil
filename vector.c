@@ -35,7 +35,8 @@ int vector_in(Vector* v, void* d) {
 	return -1;
 }
 
-size_t vector_length(Vector* v) {
+int vector_length(Vector* v) {
+	if (!v) return -1;
 	return v->_size;
 }
 
