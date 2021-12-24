@@ -70,6 +70,10 @@ START_TEST (length_returns_size_of_vector) {
 	ck_assert_int_eq(vector_length(good_vector), 10);
 } END_TEST
 
+START_TEST (length_returns_minus_one_when_no_vector) {
+	ck_assert_int_eq(vector_length(NULL), -1);
+} END_TEST
+
 Suite* vector_suite(void) {
 	Suite* s;
 	s = suite_create("Vector");
@@ -100,6 +104,7 @@ Suite* vector_suite(void) {
 	tc_length = tcase_create("length");
 	tcase_add_checked_fixture(tc_length, setup_good_vector, teardown_good_vector);
 	tcase_add_test(tc_length, length_returns_size_of_vector);
+	tcase_add_test(tc_length, length_returns_minus_one_when_no_vector);
 	suite_add_tcase(s, tc_length);
 
 	return s;
