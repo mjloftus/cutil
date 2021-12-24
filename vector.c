@@ -27,11 +27,11 @@ void* vector_get(Vector* v, size_t i) {
 	return v->_data + (v->_elem_size * i);
 }
 
-void* vector_in(Vector* v, void* d) {
+int vector_in(Vector* v, void* d) {
 	for (size_t i = 0; i < v->_size; ++i) {
-		if (!memcmp(v->_data + (i * v->_elem_size), d, v->_elem_size)) return v->_data + (i * v->_elem_size);
+		if (!memcmp(v->_data + (i * v->_elem_size), d, v->_elem_size)) return i;
 	}
-	return NULL;
+	return -1;
 }
 
 size_t vector_length(Vector* v) {
