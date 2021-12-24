@@ -44,7 +44,7 @@ START_TEST (get_returns_null_when_no_vector) {
 
 /* vector_in */
 START_TEST (in_returns_elem_when_found) {
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 9; i >= 0; --i) {
 		ck_assert_int_eq(*((int*)vector_in(good_vector, &i)), i);
 	}
 } END_TEST
