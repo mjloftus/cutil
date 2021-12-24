@@ -45,14 +45,14 @@ START_TEST (get_returns_null_when_no_vector) {
 /* vector_in */
 START_TEST (in_returns_elem_when_found) {
 	for (int i = 9; i >= 0; --i) {
-		ck_assert_int_eq(*((int*)vector_in(good_vector, &i)), i);
+		ck_assert_int_eq(vector_in(good_vector, &i), i);
 	}
 } END_TEST
 
 
 START_TEST (in_returns_null_when_not_found) {
 	for (int i = 10; i < 20; ++i) {
-		ck_assert_ptr_null(vector_in(good_vector, &i));
+		ck_assert_int_eq(vector_in(good_vector, &i), -1);
 	}
 } END_TEST
 
