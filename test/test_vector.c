@@ -1,21 +1,38 @@
 #include <check.h>
 #include "../vector.h"
 
-START_TEST (vector_is_created_with_positive_elem_size) {
+/*
+ * vector_create
+ */
+START_TEST (create_returns_vector_on_success) {
 	Vector* v = vector_create(4);
 	ck_assert_ptr_nonnull(v);
 	vector_delete(v);
 } END_TEST
 
-START_TEST (vector_is_not_created_with_zero_elem_size) {
-	Vector* v = vector_create(0);
-	ck_assert_ptr_null(v);
+/*
+ * vector_get
+ */
+START_TEST (get_returns_elem_in_range) {
+	Vector* v = vector_create(sizeof(int));
+	for (int i = 0; i < 10; ++i) {
+		vector_push(v, &i);
+	}
+	for (int i = 0; i < 10; ++i) {
+		ck_assert_int_eq(*((int*)vector_get(v, i)), i);
+	}
 	vector_delete(v);
 } END_TEST
 
-START_TEST (vector_is_not_created_with_negative_elem_size) {
-	Vector* v = vector_create(-1);
-	ck_assert_ptr_null(v);
+
+START_TEST (get_returns_null_out_of_range) {
+	Vector* v = vector_create(sizeof(int));
+	for (int i = 0; i < 10; ++i) {
+		vector_push(v, &i);
+	}
+	for (int i = 10; i < 20; ++i) {
+		ck_assert_ptr_null(vector_get(v, i));
+	}
 	vector_delete(v);
 } END_TEST
 
@@ -24,10 +41,13 @@ Suite* vector_suite(void) {
 	TCase* tc_create;
 	s = suite_create("Vector");
 	tc_create = tcase_create("create");
-	tcase_add_test(tc_create, vector_is_created_with_positive_elem_size);
-	tcase_add_test(tc_create, vector_is_not_created_with_zero_elem_size);
-	tcase_add_test(tc_create, vector_is_not_created_with_negative_elem_size);
+	tcase_add_test(tc_create, create_returns_vector_on_success);
 	suite_add_tcase(s, tc_create);
+	TCase* tc_get;
+	tc_get = tcase_create("get");
+	tcase_add_test(tc_get, get_returns_elem_in_range);
+	tcase_add_test(tc_get, get_returns_null_out_of_range);
+	suite_add_tcase(s, tc_get);
 
 	return s;
 }
