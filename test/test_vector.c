@@ -101,7 +101,8 @@ START_TEST (pop_returns_null_when_no_vector) {
 /* vector_push */
 START_TEST (push_adds_value_to_end_of_vector) {
 	Vector* v = vector_create(sizeof(int));
-	vector_push(v, 5);
+	int x = 5;
+	vector_push(v, &x);
 	ck_assert_int_eq(vector_length(v), 1);
 	ck_assert_int_eq(*((int*)vector_get(v, 0)), 5);
 } END_TEST
