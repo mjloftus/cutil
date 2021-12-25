@@ -74,6 +74,30 @@ START_TEST (length_returns_minus_one_when_no_vector) {
 	ck_assert_int_eq(vector_length(NULL), -1);
 } END_TEST
 
+/* vector_pop */
+START_TEST (pop_returns_last_value_of_vector) {
+	for (int i = 9; i >= 0; --i) {
+		ck_assert_int_eq(*((int*)vector_pop(good_vector)), i);
+	}
+} END_TEST
+
+START_TEST (pop_removes_element_from_vector) {
+	ck_assert_int_eq(vector_length(good_vector), 10);
+	for (int i = 0; i < 10; ++i) {
+		vector_pop(good_vector);
+		ck_assert_int_eq(vector_length(good_vector), 10-i-1);
+	}
+} END_TEST
+
+START_TEST (pop_returns_null_when_vector_empty) {
+	Vector* v = vector_create(sizeof(int));
+	ck_assert_ptr_null(vector_pop(v));
+} END_TEST
+
+START_TEST (pop_returns_null_when_no_vector) {
+	ck_assert_ptr_null(vector_pop(NULL));
+} END_TEST
+
 Suite* vector_suite(void) {
 	Suite* s;
 	s = suite_create("Vector");
@@ -106,6 +130,15 @@ Suite* vector_suite(void) {
 	tcase_add_test(tc_length, length_returns_size_of_vector);
 	tcase_add_test(tc_length, length_returns_minus_one_when_no_vector);
 	suite_add_tcase(s, tc_length);
+
+	TCase* tc_pop;
+	tc_pop = tcase_create("pop");
+	tcase_add_checked_fixture(tc_pop, setup_good_vector, teardown_good_vector);
+	tcase_add_test(tc_pop, pop_returns_last_value_of_vector);
+	tcase_add_test(tc_pop, pop_removes_element_from_vector);
+	tcase_add_test(tc_pop, pop_returns_null_when_vector_empty);
+	tcase_add_test(tc_pop, pop_returns_null_when_no_vector);
+	suite_add_tcase(s, tc_pop);
 
 	return s;
 }
