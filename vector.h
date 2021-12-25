@@ -21,6 +21,7 @@ size_t vector_in(Vector*, void*);
 size_t vector_length(Vector*);
 void* vector_pop(Vector*);
 void vector_push(Vector*, void*);
+void vector_reduce(Vector*, void(void*, void*), void*);
 void vector_reverse(Vector*);
 void vector_set(Vector*, size_t, void*);
 

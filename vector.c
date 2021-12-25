@@ -53,6 +53,12 @@ void vector_push(Vector* v, void* d) {
 	if (v->_size == v->_capacity) _vector_increase_capacity(v);
 }
 
+void vector_reduce(Vector* v, void(*f)(void*, void*), void* r) {
+	for (size_t i = 0; i < vector_length(v); ++i) {
+		(*f)(vector_get(v, i), r);
+	}
+}
+
 void vector_reverse(Vector* v) {
 	void* t = malloc(v->_elem_size);
 	for (size_t i = 0; i < v->_size / 2; ++i) {
