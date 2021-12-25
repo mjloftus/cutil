@@ -7,6 +7,7 @@
 
 typedef struct Vector {
 	void* _data;
+/* TODO: enforce max size on vector _size */
 	size_t _size;
 	size_t _capacity;
 	size_t _elem_size;
