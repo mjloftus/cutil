@@ -107,6 +107,19 @@ START_TEST (push_adds_value_to_end_of_vector) {
 	ck_assert_int_eq(*((int*)vector_get(v, 0)), 5);
 } END_TEST
 
+/* vector_reduce */
+
+/* vector_reverse */
+START_TEST (reverse_reverses_ordering_of_elements) {
+	for (int i = 0; i < vector_length(good_vector); ++i) {
+		ck_assert_int_eq(*((int*)vector_get(good_vector, i)), i);
+	}
+	vector_reverse(good_vector);
+	for (int i = 0; i < vector_length(good_vector); ++i) {
+		ck_assert_int_eq(*((int*)vector_get(good_vector, i)), vector_length(good_vector)-1-i);
+	}
+} END_TEST
+
 Suite* vector_suite(void) {
 	Suite* s;
 	s = suite_create("Vector");
@@ -153,6 +166,12 @@ Suite* vector_suite(void) {
 	tc_push = tcase_create("push");
 	tcase_add_test(tc_push, push_adds_value_to_end_of_vector);
 	suite_add_tcase(s, tc_push);
+
+	TCase* tc_reverse;
+	tc_reverse = tcase_create("reverse");
+	tcase_add_checked_fixture(tc_reverse, setup_good_vector, teardown_good_vector);
+	tcase_add_test(tc_reverse, reverse_reverses_ordering_of_elements);
+	suite_add_tcase(s, tc_reverse);
 
 	return s;
 }
