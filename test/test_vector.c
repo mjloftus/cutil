@@ -98,6 +98,14 @@ START_TEST (pop_returns_null_when_no_vector) {
 	ck_assert_ptr_null(vector_pop(NULL));
 } END_TEST
 
+/* vector_push */
+START_TEST (push_adds_value_to_end_of_vector) {
+	Vector* v = vector_create(sizeof(int));
+	vector_push(v, 5);
+	ck_assert_int_eq(vector_length(v), 1);
+	ck_assert_int_eq(*((int*)vector_get(v, 0)), 5);
+} END_TEST
+
 Suite* vector_suite(void) {
 	Suite* s;
 	s = suite_create("Vector");
@@ -139,6 +147,11 @@ Suite* vector_suite(void) {
 	tcase_add_test(tc_pop, pop_returns_null_when_vector_empty);
 	tcase_add_test(tc_pop, pop_returns_null_when_no_vector);
 	suite_add_tcase(s, tc_pop);
+
+	TCase* tc_push;
+	tc_push = tcase_create("push");
+	tcase_add_test(tc_push, push_adds_value_to_end_of_vector);
+	suite_add_tcase(s, tc_push);
 
 	return s;
 }
