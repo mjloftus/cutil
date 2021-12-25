@@ -1,7 +1,6 @@
 #ifndef __VECTOR_CUTIL
 #define __VECTOR_CUTIL
 
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
