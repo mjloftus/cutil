@@ -163,6 +163,13 @@ START_TEST (decrease_capacity_halves_capacity_of_vector) {
 	}
 } END_TEST
 
+START_TEST (decrease_capacity_does_not_reduce_capacity_below_minimum) {
+	Vector* v = vector_create(sizeof(int));
+	ck_assert_int_eq(v->_capacity, 2);
+	_vector_decrease_capacity(v);
+	ck_assert_int_eq(v->_capacity, 2);
+} END_TEST
+
 /* suite */
 Suite* vector_suite(void) {
 	Suite* s;
@@ -237,6 +244,7 @@ Suite* vector_suite(void) {
 	TCase* tc_decrease_capacity;
 	tc_decrease_capacity = tcase_create("_decrease_capacity");
 	tcase_add_test(tc_decrease_capacity, decrease_capacity_halves_capacity_of_vector);
+	tcase_add_test(tc_decrease_capacity, decrease_capacity_does_not_reduce_capacity_below_minimum);
 	suite_add_tcase(s, tc_decrease_capacity);
 
 	return s;
