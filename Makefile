@@ -1,5 +1,6 @@
-vector: vector.c main.c
-	gcc -o test.a vector.c main.c
+libcutil: ./src/vector.c
+	gcc -c -Wall -Werror -fpic ./src/vector.c
+	gcc -shared -o libcutil.so vector.o
 
 test: ./test/test_vector.c ./src/vector.c
 	gcc -o run_tests ./test/test_vector.c ./src/vector.c -lcheck
@@ -8,4 +9,4 @@ test: ./test/test_vector.c ./src/vector.c
 .PHONY: test
 
 clean:
-	rm run_tests
+	rm run_tests *.o *.so
