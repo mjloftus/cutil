@@ -121,12 +121,20 @@ START_TEST (reduce_sets_result_according_to_function) {
 
 /* vector_reverse */
 START_TEST (reverse_reverses_ordering_of_elements) {
-	for (int i = 0; i < vector_length(good_vector); ++i) {
-		ck_assert_int_eq(*((int*)vector_get(good_vector, i)), i);
-	}
 	vector_reverse(good_vector);
 	for (int i = 0; i < vector_length(good_vector); ++i) {
 		ck_assert_int_eq(*((int*)vector_get(good_vector, i)), vector_length(good_vector)-1-i);
+	}
+} END_TEST
+
+/* vector_set */
+START_TEST (set_sets_offset_location_to_value) {
+	for (int i = 0; i < vector_length(good_vector); ++i) {
+		int k = i + 100;
+		vector_set(good_vector, i, &k);
+	}
+	for (int i = 0; i < vector_length(good_vector); ++i) {
+		ck_assert_int_eq(vector_get(good_vector, i), i + 100);
 	}
 } END_TEST
 
@@ -189,6 +197,12 @@ Suite* vector_suite(void) {
 	tcase_add_checked_fixture(tc_reverse, setup_good_vector, teardown_good_vector);
 	tcase_add_test(tc_reverse, reverse_reverses_ordering_of_elements);
 	suite_add_tcase(s, tc_reverse);
+
+	TCase* tc_set;
+	tc_set = tcase_create("set");
+	tcase_add_checked_fixture(tc_set, setup_good_vector, teardown_good_vector);
+	tcase_add_test(tc_set, set_sets_offset_location_to_value);
+	suite_add_tcase(s, tc_set);
 
 	return s;
 }
