@@ -107,7 +107,6 @@ START_TEST (push_adds_value_to_end_of_vector) {
 	ck_assert_int_eq(*((int*)vector_get(v, 0)), 5);
 } END_TEST
 
-
 /* vector_reduce */
 START_TEST (reduce_sets_result_according_to_function) {
 	void sum(void* a, void* b) {
@@ -131,6 +130,7 @@ START_TEST (reverse_reverses_ordering_of_elements) {
 	}
 } END_TEST
 
+/* suite */
 Suite* vector_suite(void) {
 	Suite* s;
 	s = suite_create("Vector");
