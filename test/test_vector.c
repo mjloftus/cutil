@@ -134,7 +134,19 @@ START_TEST (set_sets_offset_location_to_value) {
 		vector_set(good_vector, i, &k);
 	}
 	for (int i = 0; i < vector_length(good_vector); ++i) {
-		ck_assert_int_eq(vector_get(good_vector, i), i + 100);
+		ck_assert_int_eq(*((int*)vector_get(good_vector, i)), i + 100);
+	}
+} END_TEST
+
+/* _vector_increase_capacity */
+START_TEST (increase_capacity_doubles_capacity_of_vector) {
+	Vector* v = vector_create(sizeof(int));
+	int expected = 2;
+	ck_assert_int_eq(v->_capacity, expected);
+	for (int i = 0; i < 10; ++i) {
+		_vector_increase_capacity(v);
+		expected *= 2;
+		ck_assert_int_eq(v->_capacity, expected);
 	}
 } END_TEST
 
@@ -203,6 +215,11 @@ Suite* vector_suite(void) {
 	tcase_add_checked_fixture(tc_set, setup_good_vector, teardown_good_vector);
 	tcase_add_test(tc_set, set_sets_offset_location_to_value);
 	suite_add_tcase(s, tc_set);
+
+	TCase* tc_increase_capacity;
+	tc_increase_capacity = tcase_create("_increase_capacity");
+	tcase_add_test(tc_increase_capacity, increase_capacity_doubles_capacity_of_vector);
+	suite_add_tcase(s, tc_increase_capacity);
 
 	return s;
 }
