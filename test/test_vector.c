@@ -115,7 +115,7 @@ START_TEST (reduce_sets_result_according_to_function) {
 	void (*f)(void*, void*) = &sum;
 	int* result = malloc(sizeof(int));
 	*result = 0;
-	vector_reduce(good_vector, sum, result);
+	vector_reduce(good_vector, f, result);
 	ck_assert_int_eq(*result, 45);
 } END_TEST
 
