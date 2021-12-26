@@ -3,7 +3,7 @@ libcutil: ./src/vector.c
 	gcc -shared -o libcutil.so vector.o
 
 test: ./test/test_vector.c ./src/vector.c
-	gcc -o run_tests ./test/test_vector.c ./src/vector.c -lcheck
+	gcc -Wall -Werror -o run_tests ./test/test_vector.c ./src/vector.c -lcheck
 	./run_tests
 
 .PHONY: test
