@@ -150,6 +150,19 @@ START_TEST (increase_capacity_doubles_capacity_of_vector) {
 	}
 } END_TEST
 
+/* _vector_decrease_capacity */
+START_TEST (decrease_capacity_halves_capacity_of_vector) {
+	Vector* v = vector_create(sizeof(int));
+	v->_capacity = 2048;
+	v->_data = realloc(v->_data, v->_capacity * v->_elem_size);
+	int expected = v->_capacity;
+	for (int i = 0; i < 10; ++i) {
+		_vector_decrease_capacity(v);
+		expected /= 2;
+		ck_assert_int_eq(v->_capacity, expected);
+	}
+} END_TEST
+
 /* suite */
 Suite* vector_suite(void) {
 	Suite* s;
@@ -220,6 +233,11 @@ Suite* vector_suite(void) {
 	tc_increase_capacity = tcase_create("_increase_capacity");
 	tcase_add_test(tc_increase_capacity, increase_capacity_doubles_capacity_of_vector);
 	suite_add_tcase(s, tc_increase_capacity);
+
+	TCase* tc_decrease_capacity;
+	tc_decrease_capacity = tcase_create("_decrease_capacity");
+	tcase_add_test(tc_decrease_capacity, decrease_capacity_halves_capacity_of_vector);
+	suite_add_tcase(s, tc_decrease_capacity);
 
 	return s;
 }
