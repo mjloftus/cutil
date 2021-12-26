@@ -107,7 +107,18 @@ START_TEST (push_adds_value_to_end_of_vector) {
 	ck_assert_int_eq(*((int*)vector_get(v, 0)), 5);
 } END_TEST
 
+
 /* vector_reduce */
+START_TEST (reduce_sets_result_according_to_function) {
+	void sum(void* a, void* b) {
+		*((int*)b) += *((int*)a);
+	}
+	void (*f)(void*, void*) = &sum;
+	int* result = malloc(sizeof(int));
+	*result = 0;
+	vector_reduce(good_vector, sum, result);
+	ck_assert_int_eq(*result, 45);
+} END_TEST
 
 /* vector_reverse */
 START_TEST (reverse_reverses_ordering_of_elements) {
@@ -166,6 +177,12 @@ Suite* vector_suite(void) {
 	tc_push = tcase_create("push");
 	tcase_add_test(tc_push, push_adds_value_to_end_of_vector);
 	suite_add_tcase(s, tc_push);
+
+	TCase* tc_reduce;
+	tc_reduce = tcase_create("reduce");
+	tcase_add_checked_fixture(tc_reduce, setup_good_vector, teardown_good_vector);
+	tcase_add_test(tc_reduce, reduce_sets_result_according_to_function);
+	suite_add_tcase(s, tc_reduce);
 
 	TCase* tc_reverse;
 	tc_reverse = tcase_create("reverse");
