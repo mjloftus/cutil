@@ -1,4 +1,4 @@
-#include "vector.h"
+#include "../include/vector.h"
 
 Vector* vector_create(size_t elem_size) {
 	size_t default_capacity = 2;

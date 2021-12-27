@@ -1,5 +1,5 @@
 #include <check.h>
-#include "../src/vector.h"
+#include "../include/vector.h"
 
 /* Test Fixtures */
 Vector* good_vector;
