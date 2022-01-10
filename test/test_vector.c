@@ -30,10 +30,16 @@ START_TEST (create_inits_vector_when_success) {
 /* vector_delete */
 START_TEST (delete_frees_data_and_vector_when_success) {
 	int* data = good_vector->_data;
-	vector_delete(good_vector);
+	vector_error_t rc = vector_delete(good_vector);
+	ck_assert_int_eq(rc, E_VECTOR_SUCCESS);
 	ck_assert_ptr_null(data);
 	ck_assert_ptr_null(good_vector);
-}
+} END_TEST
+
+START_TEST (delete_returns_arg_error_when_bad_arg) {
+	vector_error_t rc = vector_delete(NULL);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+} END_TEST;
 
 /* vector_get */
 START_TEST (get_provides_elem_when_success) {
@@ -47,13 +53,11 @@ START_TEST (get_provides_elem_when_success) {
 } END_TEST
 
 START_TEST (get_returns_arg_error_when_bad_arg) {
-	int* data = NULL;
-	vector_error_t rc = vector_get(good_vector, 0, data);
+	vector_error_t rc = vector_get(good_vector, 0, NULL);
 	ck_assert_int_eq(rc, E_VECTOR_INVALID);
 
-	data = malloc(sizeof(int));
-	Vector* v = NULL;
-	rc = vector_get(v, 0, data);
+	int* data = malloc(sizeof(int));
+	rc = vector_get(NULL, 0, data);
 	ck_assert_int_eq(rc, E_VECTOR_INVALID);
 	free(data);
 } END_TEST
