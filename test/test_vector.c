@@ -27,8 +27,16 @@ START_TEST (create_inits_vector_when_success) {
 
 /* TODO: mock malloc to simulate failure */
 
+/* vector_delete */
+START_TEST (delete_frees_data_and_vector_when_success) {
+	int* data = good_vector->_data;
+	vector_delete(good_vector);
+	ck_assert_ptr_null(data);
+	ck_assert_ptr_null(good_vector);
+}
+
 /* vector_get */
-START_TEST (get_provides_elem_when_in_range) {
+START_TEST (get_provides_elem_when_success) {
 	int* data = malloc(sizeof(int));
 	for (int i = 0; i < 10; ++i) {
 		vector_error_t rc = vector_get(good_vector, i, data);
