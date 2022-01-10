@@ -1,88 +1,108 @@
 #include "../include/vector.h"
 
-Vector* vector_create(size_t elem_size) {
+vector_error_t vector_create(size_t elem_size, Vector* vector) {
 	size_t default_capacity = 2;
-	Vector* v = malloc(sizeof(Vector));
-	if (!v) return NULL;
-	v->_size = 0;
-	v->_capacity = default_capacity;
-	v->_elem_size = elem_size;
-	v->_data = malloc(v->_capacity * elem_size);
-	if(!v->_data) {
-		free(v);
-		return NULL;
+	vector = malloc(sizeof(Vector));
+	if (!vector) return E_VECTOR_NOMEM;
+	vector->_size = 0;
+	vector->_capacity = default_capacity;
+	vector->_elem_size = elem_size;
+	// TODO: test for overflow
+	vector->_data = malloc(vector->_capacity * elem_size);
+	if(!vector->_data) {
+		free(vector);
+		return E_VECTOR_NOMEM;
 	}
-	return v;
+	return E_VECTOR_SUCCESS;
 }
 
-void vector_delete(Vector* v) {
-	if (!v) return;
-	free(v->_data);
-	free(v);
+vector_error_t vector_delete(Vector* vector) {
+	if (!vector) return E_VECTOR_INVALID;
+	free(vector->_data);
+	free(vector);
+	return E_VECTOR_SUCCESS;
 }
 
-void* vector_get(Vector* v, size_t i) {
-	if (!v) return NULL;
-	if (i >= v->_size) return NULL;
-	return v->_data + (v->_elem_size * i);
+vector_error_t vector_get(Vector* vector, size_t index, void* data) {
+	if (!vector || !data) return E_VECTOR_INVALID;
+	if (index >= vector->_size) return E_VECTOR_BOUNDS;
+	memcpy(data, vector->_data + (vector->_elem_size * index), vector->_elem_size);
+	return E_VECTOR_SUCCESS;
 }
 
-size_t vector_in(Vector* v, void* d) {
-	if (!v || !d) return -1;
-	for (size_t i = 0; i < v->_size; ++i) {
-		if (!memcmp(v->_data + (i * v->_elem_size), d, v->_elem_size)) return i;
+vector_error_t vector_in(Vector* vector, void* data, size_t* index) {
+	if (!vector || !data || !index) return E_VECTOR_INVALID;
+	for (size_t i = 0; i < vector->_size; ++i) {
+		if (!memcmp(vector->_data + (i * vector->_elem_size), data, vector->_elem_size)) {
+		       	*index = i;
+			break;
+		}
 	}
-	return -1;
+	return E_VECTOR_SUCCESS;
 }
 
-size_t vector_length(Vector* v) {
-	if (!v) return -1;
-	return v->_size;
+vector_error_t vector_length(Vector* vector, size_t* length) {
+	if (!vector || !length) return E_VECTOR_INVALID;
+	*length = vector->_size;
+	return E_VECTOR_SUCCESS;
 }
 
-void* vector_pop(Vector* v) {
-	if (!v) return NULL;
-	if (v->_size == 0) return NULL;
-	--(v->_size);
-	return v->_data + (v->_size * v->_elem_size);
+vector_error_t vector_pop(Vector* vector, void* data) {
+	if (!vector || !data) return E_VECTOR_INVALID;
+	if (vector->_size == 0) return E_VECTOR_BOUNDS;
+	--(vector->_size);
+	memcpy(data, vector->_data + (vector->_elem_size * vector->_size), vector->_elem_size);
+	return E_VECTOR_SUCCESS;
 }
 
-void vector_push(Vector* v, void* d) {
-	memcpy(v->_data + (v->_size * v->_elem_size), d, v->_elem_size);
-	++(v->_size);
-	if (v->_size == v->_capacity) _vector_increase_capacity(v);
+vector_error_t vector_push(Vector* vector, void* data) {
+	if (!vector || !data) return E_VECTOR_INVALID;
+	memcpy(vector->_data + (vector->_size * vector->_elem_size), data, vector->_elem_size);
+	++(vector->_size);
+	if (vector->_size == vector->_capacity) _vector_increase_capacity(vector);
+	return E_VECTOR_SUCCESS;
 }
 
-void vector_reduce(Vector* v, void(*f)(void*, void*), void* r) {
-	for (size_t i = 0; i < vector_length(v); ++i) {
-		(*f)(vector_get(v, i), r);
+vector_error_t vector_reduce(Vector* vector, void(*fun)(void*, void*), void* result) {
+	if (!vector || !fun || !result) return E_VECTOR_INVALID;
+	void* data = malloc(sizeof(vector->_elem_size));
+	if (!data) return E_VECTOR_NOMEM;
+	for (size_t i = 0; i < vector->_size; ++i) {
+		vector_get(vector, i, data);
+		(*fun)(data, result);
 	}
+	free(data);
+	return E_VECTOR_SUCCESS;
 }
 
-void vector_reverse(Vector* v) {
-	void* t = malloc(v->_elem_size);
-	for (size_t i = 0; i < v->_size / 2; ++i) {
-		memcpy(t, v->_data + (i * v->_elem_size), v->_elem_size);
-		memcpy(v->_data + (i * v->_elem_size), v->_data + (v->_size - 1 - i) * v->_elem_size, v->_elem_size);
-		memcpy(v->_data + (v->_size - 1 - i) * v->_elem_size, t, v->_elem_size);
+vector_error_t vector_reverse(Vector* vector) {
+	if (!vector) return E_VECTOR_INVALID;
+	void* data = malloc(vector->_elem_size);
+	if (!data) return E_VECTOR_NOMEM;
+	for (size_t i = 0; i < vector->_size / 2; ++i) {
+		memcpy(data, vector->_data + (i * vector->_elem_size), vector->_elem_size);
+		memcpy(vector->_data + (i * vector->_elem_size), vector->_data + (vector->_size - 1 - i) * vector->_elem_size, vector->_elem_size);
+		memcpy(vector->_data + (vector->_size - 1 - i) * vector->_elem_size, data, vector->_elem_size);
 	}
-	free(t);
+	free(data);
+	return E_VECTOR_SUCCESS;
 }
 
-void vector_set(Vector* v, size_t i, void* d) {
-	if (!v) return;
-	if (i >= v->_size) return;
-	memcpy(v->_data + (i * v->_elem_size), d, v->_elem_size);
+vector_error_t vector_set(Vector* vector, size_t index, void* data) {
+	if (!vector || !data) return E_VECTOR_INVALID;
+	if (index >= vector->_size) return E_VECTOR_BOUNDS;
+	memcpy(vector->_data + (index * vector->_elem_size), data, vector->_elem_size);
+	return E_VECTOR_SUCCESS;
 }
 
-void _vector_increase_capacity(Vector* v) {
-	v->_capacity *= 2;
-	v->_data = realloc(v->_data, v->_capacity * v->_elem_size);
+void _vector_increase_capacity(Vector* vector) {
+	vector->_capacity *= 2;
+	vector->_data = realloc(vector->_data, vector->_capacity * vector->_elem_size);
 }
 
-void _vector_decrease_capacity(Vector* v) {
-	if (v->_capacity <= 2) return;
-	if (v->_capacity / 2 < v->_size) return;
-	v->_capacity /= 2;
-	v->_data = realloc(v->_data, v->_capacity * v->_elem_size);
+void _vector_decrease_capacity(Vector* vector) {
+	if (vector->_capacity <= 2) return;
+	if (vector->_capacity / 2 < vector->_size) return;
+	vector->_capacity /= 2;
+	vector->_data = realloc(vector->_data, vector->_capacity * vector->_elem_size);
 }
