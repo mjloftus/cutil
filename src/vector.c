@@ -19,7 +19,9 @@ vector_error_t vector_create(size_t elem_size, Vector* vector) {
 vector_error_t vector_delete(Vector* vector) {
 	if (!vector) return E_VECTOR_INVALID;
 	free(vector->_data);
+	vector->_data = NULL;
 	free(vector);
+	vector = NULL;
 	return E_VECTOR_SUCCESS;
 }
 
