@@ -5,7 +5,8 @@
 Vector* good_vector;
 
 void setup_good_vector(void) {
-	good_vector = vector_create(sizeof(int));
+	vector_error_t rc = vector_create(sizeof(int), good_vector);
+	ck_assert_int_eq(rc, 0);
 	for (int i = 0; i < 10; ++i) {
 		vector_push(good_vector, &i);
 	}
@@ -16,30 +17,46 @@ void teardown_good_vector(void) {
 }
 
 /* vector_create */
-START_TEST (create_returns_vector_when_success) {
-	Vector* v = vector_create(4);
+START_TEST (create_inits_vector_when_success) {
+	Vector* v = NULL;
+	vector_error_t rc = vector_create(4, v);
 	ck_assert_ptr_nonnull(v);
+	ck_assert_int_eq(rc, E_VECTOR_SUCCESS);
 	vector_delete(v);
 } END_TEST
 
 /* TODO: mock malloc to simulate failure */
 
 /* vector_get */
-START_TEST (get_returns_elem_when_in_range) {
+START_TEST (get_provides_elem_when_in_range) {
+	int* data = malloc(sizeof(int));
 	for (int i = 0; i < 10; ++i) {
-		ck_assert_int_eq(*((int*)vector_get(good_vector, i)), i);
+		vector_error_t rc = vector_get(good_vector, i, data);
+		ck_assert_int_eq(rc, E_VECTOR_SUCCESS);
+		ck_assert_int_eq(*data, i);
 	}
+	free(data);
 } END_TEST
 
+START_TEST (get_returns_arg_error_when_bad_arg) {
+	int* data = NULL;
+	vector_error_t rc = vector_get(good_vector, 0, data);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
 
-START_TEST (get_returns_null_when_out_of_range) {
+	data = malloc(sizeof(int));
+	Vector* v = NULL;
+	rc = vector_get(v, 0, data);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+	free(data);
+} END_TEST
+
+START_TEST (get_returns_bounds_error_when_out_of_range) {
+	int* data = malloc(sizeof(int));
 	for (int i = 10; i < 20; ++i) {
-		ck_assert_ptr_null(vector_get(good_vector, i));
+		vector_error_t rc = vector_get(good_vector, i, data);
+		ck_assert_int_eq(rc, E_VECTOR_BOUNDS);
 	}
-} END_TEST
-
-START_TEST (get_returns_null_when_no_vector) {
-	ck_assert_ptr_null(vector_get(NULL, 5));
+	free(data);
 } END_TEST
 
 /* vector_in */
