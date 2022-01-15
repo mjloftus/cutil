@@ -81,7 +81,7 @@ void _vector_increase_capacity(Vector* v) {
 }
 
 void _vector_decrease_capacity(Vector* v) {
-	if (v->_capacity <= 2) return;
+	if (v->_capacity <= VECTOR_DEFAULT_CAPACITY) return;
 	if (v->_capacity / 2 < v->_size) return;
 	v->_capacity /= 2;
 	v->_data = realloc(v->_data, v->_capacity * v->_elem_size);
