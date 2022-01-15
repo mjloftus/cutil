@@ -1,7 +1,7 @@
 #include "../include/vector.h"
 
 Vector* vector_create(size_t elem_size) {
-	size_t default_capacity = 2;
+	size_t default_capacity = VECTOR_DEFAULT_CAPACITY;
 	Vector* v = malloc(sizeof(Vector));
 	if (!v) return NULL;
 	v->_size = 0;

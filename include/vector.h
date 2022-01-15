@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+const size_t VECTOR_DEFAULT_CAPACITY = 2;
+
 typedef struct Vector {
 	void* _data;
 /* TODO: enforce max size on vector _size */
