@@ -19,8 +19,8 @@ typedef struct Vector {
 	size_t _elem_size;
 } Vector;
 
-vector_error_t vector_create(size_t, Vector*);
-vector_error_t vector_delete(Vector*);
+vector_error_t vector_create(size_t, Vector**);
+vector_error_t vector_delete(Vector**);
 
 vector_error_t vector_get(Vector*, size_t, void*);
 vector_error_t vector_in(Vector*, void*, size_t*);
