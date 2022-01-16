@@ -197,18 +197,41 @@ START_TEST (push_returns_invalid_error_when_bad_arg) {
 	ck_assert_int_eq(rc, E_VECTOR_INVALID);
 } END_TEST
 
-///* vector_reduce */
-//START_TEST (reduce_sets_result_according_to_function) {
-//	void sum(void* a, void* b) {
-//		*((int*)b) += *((int*)a);
-//	}
-//	void (*f)(void*, void*) = &sum;
-//	int* result = malloc(sizeof(int));
-//	*result = 0;
-//	vector_reduce(good_vector, f, result);
-//	ck_assert_int_eq(*result, 45);
-//} END_TEST
-//
+/* vector_reduce */
+START_TEST (reduce_sets_result_according_to_function_when_success) {
+	void sum(void* a, void* b) {
+		*((int*)b) += *((int*)a);
+	}
+	void (*f)(void*, void*) = &sum;
+	int* result = malloc(sizeof(int));
+	*result = 0;
+	vector_error_t rc = vector_reduce(good_vector, f, result);
+	ck_assert_int_eq(rc, E_VECTOR_SUCCESS);
+	ck_assert_int_eq(*result, 45);
+	free(result);
+} END_TEST
+
+START_TEST (reduce_returns_invalid_error_when_bad_arg) {
+	void sum(void* a, void* b) {
+		*((int*)b) += *((int*)a);
+	}
+	void (*f)(void*, void*) = &sum;
+	int* result = malloc(sizeof(int));
+
+	vector_error_t rc = vector_reduce(NULL, f, result);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+
+	rc = vector_reduce(good_vector, NULL, result);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+
+	rc = vector_reduce(good_vector, f, NULL);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+
+	free(result);
+} END_TEST
+
+// TODO: mock malloc to test for nomem error
+
 ///* vector_reverse */
 //START_TEST (reverse_reverses_ordering_of_elements) {
 //	vector_reverse(good_vector);
@@ -316,13 +339,14 @@ Suite* vector_suite(void) {
 	tcase_add_test(tc_push, push_returns_invalid_error_when_bad_arg);
 	suite_add_tcase(s, tc_push);
 
-/*	TCase* tc_reduce;
+	TCase* tc_reduce;
 	tc_reduce = tcase_create("reduce");
 	tcase_add_checked_fixture(tc_reduce, setup_good_vector, teardown_good_vector);
-	tcase_add_test(tc_reduce, reduce_sets_result_according_to_function);
+	tcase_add_test(tc_reduce, reduce_sets_result_according_to_function_when_success);
+	tcase_add_test(tc_reduce, reduce_returns_invalid_error_when_bad_arg);
 	suite_add_tcase(s, tc_reduce);
 
-	TCase* tc_reverse;
+/*	TCase* tc_reverse;
 	tc_reverse = tcase_create("reverse");
 	tcase_add_checked_fixture(tc_reverse, setup_good_vector, teardown_good_vector);
 	tcase_add_test(tc_reverse, reverse_reverses_ordering_of_elements);
