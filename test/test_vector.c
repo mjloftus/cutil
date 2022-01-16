@@ -35,8 +35,12 @@ START_TEST (delete_frees_vector_when_success) {
 	ck_assert_ptr_null(good_vector);
 } END_TEST
 
-START_TEST (delete_returns_arg_error_when_bad_arg) {
+START_TEST (delete_returns_invalid_error_when_bad_arg) {
 	vector_error_t rc = vector_delete(NULL);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+
+	Vector* v = NULL;
+	rc = vector_delete(&v);
 	ck_assert_int_eq(rc, E_VECTOR_INVALID);
 } END_TEST;
 
@@ -51,7 +55,7 @@ START_TEST (get_provides_elem_when_success) {
 	free(data);
 } END_TEST
 
-START_TEST (get_returns_arg_error_when_bad_arg) {
+START_TEST (get_returns_invalid_error_when_bad_arg) {
 	vector_error_t rc = vector_get(good_vector, 0, NULL);
 	ck_assert_int_eq(rc, E_VECTOR_INVALID);
 
@@ -70,29 +74,43 @@ START_TEST (get_returns_bounds_error_when_index_out_of_range) {
 	free(data);
 } END_TEST
 
-///* vector_in */
-//START_TEST (in_returns_elem_when_found) {
-//	for (int i = 9; i >= 0; --i) {
-//		ck_assert_int_eq(vector_in(good_vector, &i), i);
-//	}
-//} END_TEST
-//
-//
-//START_TEST (in_returns_minus_one_when_not_found) {
-//	for (int i = 10; i < 20; ++i) {
-//		ck_assert_int_eq(vector_in(good_vector, &i), -1);
-//	}
-//} END_TEST
-//
-//START_TEST (in_returns_minus_one_when_no_vector) {
-//	int i = 4;
-//	ck_assert_int_eq(vector_in(NULL, &i), -1);
-//} END_TEST
-//
-//START_TEST (in_returns_minus_one_when_no_data) {
-//	ck_assert_int_eq(vector_in(good_vector, NULL), -1);
-//} END_TEST
-//
+/* vector_in */
+START_TEST (in_provides_index_when_found) {
+	size_t* index = malloc(sizeof(size_t));
+	for (int i = 9; i >= 0; --i) {
+		vector_error_t rc = vector_in(good_vector, &i, index);
+		ck_assert_int_eq(rc, E_VECTOR_SUCCESS);
+		ck_assert_int_eq(*index, i);
+	}
+	free(index);
+} END_TEST
+
+START_TEST (in_returns_invalid_error_when_bad_arg) {
+	int* data = malloc(sizeof(int));
+	size_t* index = malloc(sizeof(size_t));
+
+	vector_error_t rc = vector_in(NULL, data, index);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+
+	rc = vector_in(good_vector, NULL, index);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+
+	rc = vector_in(good_vector, data, NULL);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+
+	free(data);
+	free(index);
+} END_TEST
+
+START_TEST (in_returns_nofound_error_when_not_found) {
+	size_t* index = malloc(sizeof(size_t));
+	for (int i = 10; i < 20; ++i) {
+		vector_error_t rc = vector_in(good_vector, &i, index);
+		ck_assert_int_eq(rc, E_VECTOR_NOFOUND);
+	}
+	free(index);
+} END_TEST
+
 ///* vector_length */
 //START_TEST (length_returns_size_of_vector) {
 //	ck_assert_int_eq(vector_length(good_vector), 10);
@@ -212,27 +230,26 @@ Suite* vector_suite(void) {
 	tc_delete = tcase_create("delete");
 	tcase_add_checked_fixture(tc_delete, setup_good_vector, teardown_good_vector);
 	tcase_add_test(tc_delete, delete_frees_vector_when_success);
-	tcase_add_test(tc_delete, delete_returns_arg_error_when_bad_arg);
+	tcase_add_test(tc_delete, delete_returns_invalid_error_when_bad_arg);
 	suite_add_tcase(s, tc_delete);
 
 	TCase* tc_get;
 	tc_get = tcase_create("get");
 	tcase_add_checked_fixture(tc_get, setup_good_vector, teardown_good_vector);
 	tcase_add_test(tc_get, get_provides_elem_when_success);
-	tcase_add_test(tc_get, get_returns_arg_error_when_bad_arg);
+	tcase_add_test(tc_get, get_returns_invalid_error_when_bad_arg);
 	tcase_add_test(tc_get, get_returns_bounds_error_when_index_out_of_range);
 	suite_add_tcase(s, tc_get);
 
-/*	TCase* tc_in;
+	TCase* tc_in;
 	tc_in = tcase_create("in");
 	tcase_add_checked_fixture(tc_in, setup_good_vector, teardown_good_vector);
-	tcase_add_test(tc_in, in_returns_elem_when_found);
-	tcase_add_test(tc_in, in_returns_minus_one_when_not_found);
-	tcase_add_test(tc_in, in_returns_minus_one_when_no_vector);
-	tcase_add_test(tc_in, in_returns_minus_one_when_no_data);
+	tcase_add_test(tc_in, in_provides_index_when_found);
+	tcase_add_test(tc_in, in_returns_invalid_error_when_bad_arg);
+	tcase_add_test(tc_in, in_returns_nofound_error_when_not_found);
 	suite_add_tcase(s, tc_in);
 
-	TCase* tc_length;
+/*	TCase* tc_length;
 	tc_length = tcase_create("length");
 	tcase_add_checked_fixture(tc_length, setup_good_vector, teardown_good_vector);
 	tcase_add_test(tc_length, length_returns_size_of_vector);
