@@ -250,17 +250,37 @@ START_TEST (reverse_returns_invalid_error_when_bad_arg) {
 	ck_assert_int_eq(rc, E_VECTOR_INVALID);
 } END_TEST
 
-///* vector_set */
-//START_TEST (set_sets_offset_location_to_value) {
-//	for (int i = 0; i < vector_length(good_vector); ++i) {
-//		int k = i + 100;
-//		vector_set(good_vector, i, &k);
-//	}
-//	for (int i = 0; i < vector_length(good_vector); ++i) {
-//		ck_assert_int_eq(*((int*)vector_get(good_vector, i)), i + 100);
-//	}
-//} END_TEST
-//
+/* vector_set */
+START_TEST (set_sets_offset_location_to_value_when_success) {
+	for (int i = 0; i < good_vector->_size; ++i) {
+		int k = i + 100;
+		vector_error_t rc = vector_set(good_vector, i, &k);
+		ck_assert_int_eq(rc, E_VECTOR_SUCCESS);
+	}
+	for (int i = 0; i < good_vector->_size; ++i) {
+		int data;
+		vector_get(good_vector, i, &data);
+		ck_assert_int_eq(data, i + 100);
+	}
+} END_TEST
+
+START_TEST (set_returns_invalid_error_when_bad_arg) {
+	size_t index = 0;
+	int data;
+
+	vector_error_t rc = vector_set(NULL, index, &data);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+	
+	rc = vector_set(good_vector, index, NULL);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+} END_TEST
+
+START_TEST (set_returns_bounds_error_when_index_out_of_range) {
+	int data;
+	vector_error_t rc = vector_get(good_vector, good_vector->_size + 1, &data);
+	ck_assert_int_eq(rc, E_VECTOR_BOUNDS);
+} END_TEST
+
 ///* _vector_increase_capacity */
 //START_TEST (increase_capacity_doubles_capacity_of_vector) {
 //	Vector* v = vector_create(sizeof(int));
@@ -363,13 +383,15 @@ Suite* vector_suite(void) {
 	tcase_add_test(tc_reverse, reverse_returns_invalid_error_when_bad_arg);
 	suite_add_tcase(s, tc_reverse);
 
-/*	TCase* tc_set;
+	TCase* tc_set;
 	tc_set = tcase_create("set");
 	tcase_add_checked_fixture(tc_set, setup_good_vector, teardown_good_vector);
-	tcase_add_test(tc_set, set_sets_offset_location_to_value);
+	tcase_add_test(tc_set, set_sets_offset_location_to_value_when_success);
+	tcase_add_test(tc_set, set_returns_invalid_error_when_bad_arg);
+	tcase_add_test(tc_set, set_returns_bounds_error_when_index_out_of_range);
 	suite_add_tcase(s, tc_set);
 
-	TCase* tc_increase_capacity;
+/*	TCase* tc_increase_capacity;
 	tc_increase_capacity = tcase_create("_increase_capacity");
 	tcase_add_test(tc_increase_capacity, increase_capacity_doubles_capacity_of_vector);
 	suite_add_tcase(s, tc_increase_capacity);
