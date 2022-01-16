@@ -37,10 +37,10 @@ vector_error_t vector_in(Vector* vector, void* data, size_t* index) {
 	for (size_t i = 0; i < vector->_size; ++i) {
 		if (!memcmp(vector->_data + (i * vector->_elem_size), data, vector->_elem_size)) {
 		       	*index = i;
-			break;
+			return E_VECTOR_SUCCESS;
 		}
 	}
-	return E_VECTOR_SUCCESS;
+	return E_VECTOR_NOFOUND;
 }
 
 vector_error_t vector_length(Vector* vector, size_t* length) {

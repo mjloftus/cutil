@@ -8,7 +8,8 @@ typedef enum _vector_error {
 	E_VECTOR_SUCCESS,
 	E_VECTOR_INVALID = -1,
 	E_VECTOR_NOMEM = -2,
-	E_VECTOR_BOUNDS = -3
+	E_VECTOR_BOUNDS = -3,
+	E_VECTOR_NOFOUND = -4
 } vector_error_t;
 
 typedef struct Vector {
