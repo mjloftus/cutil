@@ -175,15 +175,17 @@ START_TEST (pop_returns_bounds_error_when_vector_empty) {
 	free(data);
 } END_TEST
 
-///* vector_push */
-//START_TEST (push_adds_value_to_end_of_vector) {
-//	Vector* v = vector_create(sizeof(int));
-//	int x = 5;
-//	vector_push(v, &x);
-//	ck_assert_int_eq(vector_length(v), 1);
-//	ck_assert_int_eq(*((int*)vector_get(v, 0)), 5);
-//} END_TEST
-//
+/* vector_push */
+START_TEST (push_adds_value_to_end_of_vector_when_success) {
+	Vector* v;
+	vector_create(sizeof(int), &v);
+	int x = 5;
+	vector_error_t rc = vector_push(v, &x);
+	ck_assert_int_eq(rc, E_VECTOR_SUCCESS);
+	ck_assert_int_eq(v->_size, 1);
+	ck_assert_int_eq(*((int*)v->_data), 5);
+} END_TEST
+
 ///* vector_reduce */
 //START_TEST (reduce_sets_result_according_to_function) {
 //	void sum(void* a, void* b) {
@@ -296,12 +298,12 @@ Suite* vector_suite(void) {
 	tcase_add_test(tc_pop, pop_returns_bounds_error_when_vector_empty);
 	suite_add_tcase(s, tc_pop);
 
-/*	TCase* tc_push;
+	TCase* tc_push;
 	tc_push = tcase_create("push");
-	tcase_add_test(tc_push, push_adds_value_to_end_of_vector);
+	tcase_add_test(tc_push, push_adds_value_to_end_of_vector_when_success);
 	suite_add_tcase(s, tc_push);
 
-	TCase* tc_reduce;
+/*	TCase* tc_reduce;
 	tc_reduce = tcase_create("reduce");
 	tcase_add_checked_fixture(tc_reduce, setup_good_vector, teardown_good_vector);
 	tcase_add_test(tc_reduce, reduce_sets_result_according_to_function);
