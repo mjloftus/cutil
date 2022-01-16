@@ -131,30 +131,50 @@ START_TEST (length_returns_invalid_error_when_bad_arg) {
 	free(length);
 } END_TEST
 
-///* vector_pop */
-//START_TEST (pop_returns_last_value_of_vector) {
-//	for (int i = 9; i >= 0; --i) {
-//		ck_assert_int_eq(*((int*)vector_pop(good_vector)), i);
-//	}
-//} END_TEST
-//
-//START_TEST (pop_removes_element_from_vector) {
-//	ck_assert_int_eq(vector_length(good_vector), 10);
-//	for (int i = 0; i < 10; ++i) {
-//		vector_pop(good_vector);
-//		ck_assert_int_eq(vector_length(good_vector), 10-i-1);
-//	}
-//} END_TEST
-//
-//START_TEST (pop_returns_null_when_vector_empty) {
-//	Vector* v = vector_create(sizeof(int));
-//	ck_assert_ptr_null(vector_pop(v));
-//} END_TEST
-//
-//START_TEST (pop_returns_null_when_no_vector) {
-//	ck_assert_ptr_null(vector_pop(NULL));
-//} END_TEST
-//
+/* vector_pop */
+START_TEST (pop_provides_last_value_of_vector_when_success) {
+	int* data = malloc(sizeof(int));
+	for (int i = 9; i >= 0; --i) {
+		vector_error_t rc = vector_pop(good_vector, data);
+		ck_assert_int_eq(rc, E_VECTOR_SUCCESS);
+		ck_assert_int_eq(*data, i);
+	}
+	free(data);
+} END_TEST
+
+START_TEST (pop_removes_last_element_from_vector_when_success) {
+	int* data = malloc(sizeof(int));
+	ck_assert_int_eq(good_vector->_size, 10);
+	for (int i = 0; i < 10; ++i) {
+		vector_error_t rc = vector_pop(good_vector, data);
+		ck_assert_int_eq(rc, E_VECTOR_SUCCESS);
+		ck_assert_int_eq(good_vector->_size, 10-i-1);
+	}
+	free(data);
+} END_TEST
+
+START_TEST (pop_returns_invalid_error_when_bad_arg) {
+	int* data = malloc(sizeof(int));
+
+	vector_error_t rc = vector_pop(NULL, data);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+
+	rc = vector_pop(good_vector, NULL);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+
+	free(data);
+} END_TEST
+
+START_TEST (pop_returns_bounds_error_when_vector_empty) {
+	Vector* v;
+	vector_create(sizeof(int), &v);
+	int* data = malloc(sizeof(int));
+	vector_error_t rc = vector_pop(v, data);
+	ck_assert_int_eq(rc, E_VECTOR_BOUNDS);
+	free(v);
+	free(data);
+} END_TEST
+
 ///* vector_push */
 //START_TEST (push_adds_value_to_end_of_vector) {
 //	Vector* v = vector_create(sizeof(int));
@@ -267,16 +287,16 @@ Suite* vector_suite(void) {
 	tcase_add_test(tc_length, length_returns_invalid_error_when_bad_arg);
 	suite_add_tcase(s, tc_length);
 
-/*	TCase* tc_pop;
+	TCase* tc_pop;
 	tc_pop = tcase_create("pop");
 	tcase_add_checked_fixture(tc_pop, setup_good_vector, teardown_good_vector);
-	tcase_add_test(tc_pop, pop_returns_last_value_of_vector);
-	tcase_add_test(tc_pop, pop_removes_element_from_vector);
-	tcase_add_test(tc_pop, pop_returns_null_when_vector_empty);
-	tcase_add_test(tc_pop, pop_returns_null_when_no_vector);
+	tcase_add_test(tc_pop, pop_provides_last_value_of_vector_when_success);
+	tcase_add_test(tc_pop, pop_removes_last_element_from_vector_when_success);
+	tcase_add_test(tc_pop, pop_returns_invalid_error_when_bad_arg);
+	tcase_add_test(tc_pop, pop_returns_bounds_error_when_vector_empty);
 	suite_add_tcase(s, tc_pop);
 
-	TCase* tc_push;
+/*	TCase* tc_push;
 	tc_push = tcase_create("push");
 	tcase_add_test(tc_push, push_adds_value_to_end_of_vector);
 	suite_add_tcase(s, tc_push);
