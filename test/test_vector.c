@@ -281,37 +281,40 @@ START_TEST (set_returns_bounds_error_when_index_out_of_range) {
 	ck_assert_int_eq(rc, E_VECTOR_BOUNDS);
 } END_TEST
 
-///* _vector_increase_capacity */
-//START_TEST (increase_capacity_doubles_capacity_of_vector) {
-//	Vector* v = vector_create(sizeof(int));
-//	int expected = 2;
-//	ck_assert_int_eq(v->_capacity, expected);
-//	for (int i = 0; i < 10; ++i) {
-//		_vector_increase_capacity(v);
-//		expected *= 2;
-//		ck_assert_int_eq(v->_capacity, expected);
-//	}
-//} END_TEST
-//
-///* _vector_decrease_capacity */
-//START_TEST (decrease_capacity_halves_capacity_of_vector) {
-//	Vector* v = vector_create(sizeof(int));
-//	v->_capacity = 2048;
-//	v->_data = realloc(v->_data, v->_capacity * v->_elem_size);
-//	int expected = v->_capacity;
-//	for (int i = 0; i < 10; ++i) {
-//		_vector_decrease_capacity(v);
-//		expected /= 2;
-//		ck_assert_int_eq(v->_capacity, expected);
-//	}
-//} END_TEST
-//
-//START_TEST (decrease_capacity_does_not_reduce_capacity_below_minimum) {
-//	Vector* v = vector_create(sizeof(int));
-//	ck_assert_int_eq(v->_capacity, 2);
-//	_vector_decrease_capacity(v);
-//	ck_assert_int_eq(v->_capacity, 2);
-//} END_TEST
+/* _vector_increase_capacity */
+START_TEST (increase_capacity_doubles_capacity_of_vector) {
+	Vector* v;
+	vector_create(sizeof(int), &v);
+	int expected = 2;
+	ck_assert_int_eq(v->_capacity, expected);
+	for (int i = 0; i < 10; ++i) {
+		_vector_increase_capacity(v);
+		expected *= 2;
+		ck_assert_int_eq(v->_capacity, expected);
+	}
+} END_TEST
+
+/* _vector_decrease_capacity */
+START_TEST (decrease_capacity_halves_capacity_of_vector) {
+	Vector* v;
+	vector_create(sizeof(int), &v);
+	v->_capacity = 2048;
+	v->_data = realloc(v->_data, v->_capacity * v->_elem_size);
+	int expected = v->_capacity;
+	for (int i = 0; i < 10; ++i) {
+		_vector_decrease_capacity(v);
+		expected /= 2;
+		ck_assert_int_eq(v->_capacity, expected);
+	}
+} END_TEST
+
+START_TEST (decrease_capacity_does_not_reduce_capacity_below_minimum) {
+	Vector* v;
+	vector_create(sizeof(int), &v);
+	ck_assert_int_eq(v->_capacity, 2);
+	_vector_decrease_capacity(v);
+	ck_assert_int_eq(v->_capacity, 2);
+} END_TEST
 
 /* suite */
 Suite* vector_suite(void) {
@@ -391,7 +394,7 @@ Suite* vector_suite(void) {
 	tcase_add_test(tc_set, set_returns_bounds_error_when_index_out_of_range);
 	suite_add_tcase(s, tc_set);
 
-/*	TCase* tc_increase_capacity;
+	TCase* tc_increase_capacity;
 	tc_increase_capacity = tcase_create("_increase_capacity");
 	tcase_add_test(tc_increase_capacity, increase_capacity_doubles_capacity_of_vector);
 	suite_add_tcase(s, tc_increase_capacity);
@@ -400,7 +403,7 @@ Suite* vector_suite(void) {
 	tc_decrease_capacity = tcase_create("_decrease_capacity");
 	tcase_add_test(tc_decrease_capacity, decrease_capacity_halves_capacity_of_vector);
 	tcase_add_test(tc_decrease_capacity, decrease_capacity_does_not_reduce_capacity_below_minimum);
-	suite_add_tcase(s, tc_decrease_capacity); */
+	suite_add_tcase(s, tc_decrease_capacity);
 
 	return s;
 }
