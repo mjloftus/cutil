@@ -177,13 +177,24 @@ START_TEST (pop_returns_bounds_error_when_vector_empty) {
 
 /* vector_push */
 START_TEST (push_adds_value_to_end_of_vector_when_success) {
-	Vector* v;
-	vector_create(sizeof(int), &v);
-	int x = 5;
-	vector_error_t rc = vector_push(v, &x);
+	int x = 100;
+	size_t old_size = good_vector->_size;
+	vector_error_t rc = vector_push(good_vector, &x);
 	ck_assert_int_eq(rc, E_VECTOR_SUCCESS);
-	ck_assert_int_eq(v->_size, 1);
-	ck_assert_int_eq(*((int*)v->_data), 5);
+	ck_assert_int_eq(good_vector->_size, old_size + 1);
+	int last_element;
+	vector_get(good_vector, old_size, &last_element);
+	ck_assert_int_eq(last_element, 100);
+} END_TEST
+
+START_TEST (push_returns_invalid_error_when_bad_arg) {
+	int data = 5;
+
+	vector_error_t rc = vector_push(NULL, &data);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+
+	rc = vector_push(good_vector, NULL);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
 } END_TEST
 
 ///* vector_reduce */
@@ -300,7 +311,9 @@ Suite* vector_suite(void) {
 
 	TCase* tc_push;
 	tc_push = tcase_create("push");
+	tcase_add_checked_fixture(tc_push, setup_good_vector, teardown_good_vector);
 	tcase_add_test(tc_push, push_adds_value_to_end_of_vector_when_success);
+	tcase_add_test(tc_push, push_returns_invalid_error_when_bad_arg);
 	suite_add_tcase(s, tc_push);
 
 /*	TCase* tc_reduce;
