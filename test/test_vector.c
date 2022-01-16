@@ -232,14 +232,24 @@ START_TEST (reduce_returns_invalid_error_when_bad_arg) {
 
 // TODO: mock malloc to test for nomem error
 
-///* vector_reverse */
-//START_TEST (reverse_reverses_ordering_of_elements) {
-//	vector_reverse(good_vector);
-//	for (int i = 0; i < vector_length(good_vector); ++i) {
-//		ck_assert_int_eq(*((int*)vector_get(good_vector, i)), vector_length(good_vector)-1-i);
-//	}
-//} END_TEST
-//
+/* vector_reverse */
+START_TEST (reverse_reverses_ordering_of_elements_when_success) {
+	vector_error_t rc = vector_reverse(good_vector);
+	ck_assert_int_eq(rc, E_VECTOR_SUCCESS);
+	int data;
+	size_t length;
+	vector_length(good_vector, &length);
+	for (int i = 0; i < good_vector->_size; ++i) {
+		vector_get(good_vector, i, &data);
+		ck_assert_int_eq(data, length - 1 - i);
+	}
+} END_TEST
+
+START_TEST (reverse_returns_invalid_error_when_bad_arg) {
+	vector_error_t rc = vector_reverse(NULL);
+	ck_assert_int_eq(rc, E_VECTOR_INVALID);
+} END_TEST
+
 ///* vector_set */
 //START_TEST (set_sets_offset_location_to_value) {
 //	for (int i = 0; i < vector_length(good_vector); ++i) {
@@ -346,13 +356,14 @@ Suite* vector_suite(void) {
 	tcase_add_test(tc_reduce, reduce_returns_invalid_error_when_bad_arg);
 	suite_add_tcase(s, tc_reduce);
 
-/*	TCase* tc_reverse;
+	TCase* tc_reverse;
 	tc_reverse = tcase_create("reverse");
 	tcase_add_checked_fixture(tc_reverse, setup_good_vector, teardown_good_vector);
-	tcase_add_test(tc_reverse, reverse_reverses_ordering_of_elements);
+	tcase_add_test(tc_reverse, reverse_reverses_ordering_of_elements_when_success);
+	tcase_add_test(tc_reverse, reverse_returns_invalid_error_when_bad_arg);
 	suite_add_tcase(s, tc_reverse);
 
-	TCase* tc_set;
+/*	TCase* tc_set;
 	tc_set = tcase_create("set");
 	tcase_add_checked_fixture(tc_set, setup_good_vector, teardown_good_vector);
 	tcase_add_test(tc_set, set_sets_offset_location_to_value);
